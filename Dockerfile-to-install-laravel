@@ -1,0 +1,19 @@
+FROM php:8.2-cli
+
+# Install necessary extensions
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /app
+
+# Run Composer to create Laravel project
+CMD ["composer", "create-project", "--prefer-dist", "laravel/laravel", "src"]
